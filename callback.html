@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OAuth Callback — Lam sua hat</title>
+<style>
+  body { font-family: -apple-system, sans-serif; max-width: 720px; margin: 60px auto; padding: 20px; line-height: 1.6; color: #222; }
+  h1 { color: #d97706; }
+  .code-box { background: #fef3c7; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 18px; word-break: break-all; user-select: all; cursor: pointer; }
+  .btn { display: inline-block; margin-top: 16px; padding: 12px 24px; background: #d97706; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+  .ok { color: #16a34a; font-weight: bold; }
+  .err { color: #dc2626; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>🌿 OAuth Callback</h1>
+<div id="content">Loading...</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const code = params.get('code');
+const error = params.get('error') || params.get('error_description');
+const content = document.getElementById('content');
+
+if (code) {
+  content.innerHTML = `
+    <p class="ok">✅ Xác thực thành công!</p>
+    <p>Copy code này dán vào Terminal:</p>
+    <div class="code-box" id="code" onclick="copyCode()">${code}</div>
+    <button class="btn" onclick="copyCode()">📋 Copy code</button>
+    <p style="margin-top:24px;color:#666;">Sau khi copy, quay lại Terminal và paste vào.</p>
+  `;
+  // Tự copy ngay khi load
+  setTimeout(() => {
+    navigator.clipboard.writeText(code).then(() => {
+      document.querySelector('.btn').textContent = '✅ Đã copy!';
+    }).catch(() => {});
+  }, 300);
+} else if (error) {
+  content.innerHTML = `<p class="err">❌ Lỗi: ${error}</p>`;
+} else {
+  content.innerHTML = `<p>Trang callback OAuth. Mở từ link TikTok authorize sẽ tự động hiển thị code.</p>`;
+}
+
+function copyCode() {
+  const codeEl = document.getElementById('code');
+  if (!codeEl) return;
+  navigator.clipboard.writeText(codeEl.textContent).then(() => {
+    document.querySelector('.btn').textContent = '✅ Đã copy!';
+  });
+}
+</script>
+</body>
+</html>
